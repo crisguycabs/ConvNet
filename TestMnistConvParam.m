@@ -1,6 +1,6 @@
 clc, clear all, close all
 
-Wd=20;
+Wd=15;
 w=7;
 N=28;
 clases=10;
@@ -27,34 +27,34 @@ Wo=(2*rand(clases,nW5)-1)*sqrt(6)/sqrt(clases+nW5);
 X=Images(:,:,1:8000);
 D=Labels(1:8000);
 
-for epoch=1:10
+for epoch=1:5
     disp(['epoch: ' num2str(epoch)])
     [W1,W5,Wo]=MnistConvParam(W1,W5,Wo,X,D);
     
-    Xtest=Images(:,:,8001:10000);
-    Dtest=Labels(8001:10000);
-    acc=0;
-    N=length(Dtest);
-    
-    for k=1:N
-        x=Xtest(:,:,k);
-        y1=Conv(x,W1);
-        y2=ReLU(y1);
-        y3=Pool(y2);
-        y4=reshape(y3,[],1);
-        v5=W5*y4;
-        y5=ReLU(v5);
-        v=Wo*y5;
-        y=Softmax(v);
-        
-        [~,i]=max(y);
-        if i==Dtest(k)
-            acc=acc+1;
-        end
-    end
-    
-    acc=acc/N;
-    fprintf('Accuracy is %f\n',acc);
+%     Xtest=Images(:,:,8001:10000);
+%     Dtest=Labels(8001:10000);
+%     acc=0;
+%     N=length(Dtest);
+%     
+%     for k=1:N
+%         x=Xtest(:,:,k);
+%         y1=Conv(x,W1);
+%         y2=ReLU(y1);
+%         y3=Pool(y2);
+%         y4=reshape(y3,[],1);
+%         v5=W5*y4;
+%         y5=ReLU(v5);
+%         v=Wo*y5;
+%         y=Softmax(v);
+%         
+%         [~,i]=max(y);
+%         if i==Dtest(k)
+%             acc=acc+1;
+%         end
+%     end
+%     
+%     acc=acc/N;
+%     fprintf('Accuracy is %f\n',acc);
 end
 
 save('MnistConv.mat');

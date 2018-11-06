@@ -2,7 +2,7 @@
 
 load('MnistConv.mat')
 
-k=100;
+k=1;
 
 x=X(:,:,k);
 y1=Conv(x,W1);
