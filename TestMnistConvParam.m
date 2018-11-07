@@ -1,9 +1,9 @@
 clc, clear all, close all
 
-Wd=15;
-w=7;
 N=28;
 clases=10;
+Wd=15;
+w=7;
 
 postConv=N-w+1;
 postPool=postConv/2;
@@ -13,7 +13,7 @@ nMid=postPool*postPool*Wd;
 Images=loadMNISTImages('MNIST/t10k-images.idx3-ubyte');
 Images=reshape(Images,N,N,[]);
 
-Labels=ladoMNISTLabels('MNIST/t10k-labels.idx1-ubyte');
+Labels=loadMNISTLabels('MNIST/t10k-labels.idx1-ubyte');
 Labels(Labels==0)=10;
 
 rng(1);

@@ -1,0 +1,86 @@
+clc, clear all, close all
+
+N=103;
+offset=0;
+Wd=15;
+w=8;
+fracTrain=40;
+fracTest=5;
+
+[signatures, labels]=LoadSpectralSignatures('Pavia_uni.mat');
+signatures=signatures((1+offset):(N+offset),:);
+clases=length(unique(labels));
+% clases=9;
+labels(labels==0)=10;
+
+Xtrain=[];
+Xtest=[];
+Dtrain=[];
+Dtest=[];
+for c=1:clases
+    
+    t=find(labels==c);
+    t=t(randperm(length(t)));    
+    n=ceil(length(t)*fracTrain/100);
+    n2=ceil(length(t)*fracTest/100);
+    
+    Xtrain=[Xtrain signatures(:,t(1:n))];
+    Xtest=[Xtest signatures(:,t((n+1):(n+n2)))];
+    
+    temp=[];
+    temp(1:n)=c;
+    Dtrain=[Dtrain; temp'];
+    temp=[];
+    temp(1:n2)=c;
+    Dtest=[Dtest; temp'];    
+    
+end
+t=randperm(length(Dtrain));
+Xtrain=Xtrain(:,t(:));
+Dtrain=Dtrain(t);
+
+postConv=N-w+1;
+postPool=postConv/2;
+nW5=postPool;
+nMid=postPool*Wd;
+
+% rng(1);
+
+% W1=1e-2*randn([w Wd]);
+W1=randn([w Wd]);
+W5=(2*rand(nW5,nMid)-1);%*sqrt(6)/sqrt(360+nMid);
+Wo=(2*rand(clases,nW5)-1);%*sqrt(6)/sqrt(clases+nW5);
+
+% X=signatures(:,1:8000);
+% D=labels(1:8000);
+
+for epoch=1:10
+    disp(['epoch: ' num2str(epoch)])
+    [W1,W5,Wo]=SpectralConv(W1,W5,Wo,Xtrain,Dtrain);
+    
+    acc=0;
+    N=length(Dtest);
+    
+    for k=1:N
+        
+        x=Xtest(:,k);
+        y1=ConvSpectral(x,W1);
+        y2=ReLU(y1);
+        y3=PoolSpectral(y2);
+        y4=reshape(y3,[],1);
+        v5=W5*y4;
+        y5=ReLU(v5);
+        v=Wo*y5;
+        y=Softmax(v);
+
+        [~,i]=max(y);
+        if i==Dtest(k)
+            acc=acc+1;
+        end
+    end
+    
+    acc=acc/N;
+    fprintf('Accuracy is %f\n',acc);
+end
+
+save spectralConv.mat Xtest Xtrain Dtest Dtrain W1 W5 Wo

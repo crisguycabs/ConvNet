@@ -1,7 +1,7 @@
 Images=loadMNISTImages('MNIST/t10k-images.idx3-ubyte');
 Images=reshape(Images,28,28,[]);
 
-Labels=ladoMNISTLabels('MNIST/t10k-labels.idx1-ubyte');
+Labels=loadMNISTLabels('MNIST/t10k-labels.idx1-ubyte');
 Labels(Labels==0)=10;
 
 % rng(1);
